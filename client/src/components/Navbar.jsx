@@ -3,6 +3,8 @@ import { assets } from '../assets/assets';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import { useContext } from 'react';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,13 +14,17 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+  const {setShowReacuter}=useContext(AppContext)
 
   return (
     <div className="flex justify-between items-center px-8 py-4 bg-white shadow-md sticky top-0 z-50">
       {/* Logo */}
+      <Link to='/'>
       <div className="w-36">
         <img src={assets.logo} alt="Logo" className="w-full" />
       </div>
+      </Link>
+      
 
       {/* Middle Section: Desktop */}
       <div className="hidden md:flex items-center gap-6">
@@ -35,7 +41,7 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <button className="px-5 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
+            <button onClick={e=>setShowReacuter(true)} className="px-5 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
               Recruiter Login
             </button>
             <button
@@ -70,7 +76,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <button className="px-5 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
+              <button onClick={e=>setShowReacuter(true)} className="px-5 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
                 Recruiter Login
               </button>
               <button

@@ -1,7 +1,10 @@
 import React from 'react';
 import { assets } from '../assets/assets';
+import { useNavigate } from 'react-router-dom';
 
 const JobCard = ({ job }) => {
+  const navigate = useNavigate();
+
   if (!job) return null;
 
   return (
@@ -36,10 +39,16 @@ const JobCard = ({ job }) => {
 
         {/* Buttons */}
         <div className="flex justify-between gap-2 mt-auto">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700 transition">
+          <button
+            onClick={() => navigate(`/apply-job/${job._id}`)}
+            className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700 transition"
+          >
             Apply Now
           </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition">
+          <button
+            onClick={() => navigate(`/apply-job/${job._id}`)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition"
+          >
             Learn More
           </button>
         </div>

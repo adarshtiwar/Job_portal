@@ -1,5 +1,4 @@
-
-import React, { use, useContext, useState,useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { assets, JobCategories, JobLocations } from '../assets/assets';
 import JobCard from './JobCard';
@@ -7,34 +6,51 @@ import JobCard from './JobCard';
 const JobListing = () => {
   const { isSearch, searchFilter, setSearchFilter, jobs } = useContext(AppContext);
   const [showFilters, setShowFilters] = useState(false);
-  const [CurrentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState([]);
-  const[filderedJobs, setFilteredJobs] = useState(jobs);
-const handleCategoryChange = (category) => {
-  setSelectedCategory(
-    prev => prev.includes(category) ? prev.filter(cat => cat !== category) : [...prev, category]
-  )}
-const handleLocationChange = (location) => {
-  setSelectedLocation(
-    prev => prev.includes(location) ? prev.filter(loc => loc !== location) : [...prev, location]
-  )
-}
-useEffect(() => {
-  const matchescategory = (job) => {selectedCategory.length === 0 || selectedCategory.some(cat => job.category.includes(cat))}
-  const matchesLocation = (job) => {selectedLocation.length === 0 || selectedLocation.some(loc => job.location.includes(loc))}
-const matchetstitle = (job) => {searchFilter.title == "" || job.title.toLowerCase().includes(searchFilter.title.toLowerCase())}
-const matchessearchLocation = (job) => {searchFilter.location == "" || job.location.toLowerCase().includes(searchFilter.location.toLowerCase())}
-const newFilteredJobs = jobs.slice().reverse().filter(job => matchesLocation(job) && matchescategory(job) && matchetstitle(job) && matchessearchLocation(job))
-setFilteredJobs(newFilteredJobs)
-setCurrentPage(1)
+  const [filteredJobs, setFilteredJobs] = useState([]);
 
+  // Filter logic
+  useEffect(() => {
+    const matchesCategory = (job) =>
+      selectedCategory.length === 0 || selectedCategory.some((cat) => job.category.includes(cat));
+    const matchesLocation = (job) =>
+      selectedLocation.length === 0 || selectedLocation.some((loc) => job.location.includes(loc));
+    const matchesTitle = (job) =>
+      searchFilter.title === "" || job.title.toLowerCase().includes(searchFilter.title.toLowerCase());
+    const matchesSearchLocation = (job) =>
+      searchFilter.location === "" || job.location.toLowerCase().includes(searchFilter.location.toLowerCase());
 
-},[jobs, selectedCategory, selectedLocation, searchFilter, searchFilter])
+    const newFilteredJobs = jobs
+      .slice()
+      .reverse()
+      .filter((job) => matchesCategory(job) && matchesLocation(job) && matchesTitle(job) && matchesSearchLocation(job));
+
+    setFilteredJobs(newFilteredJobs);
+    setCurrentPage(1);
+  }, [jobs, selectedCategory, selectedLocation, searchFilter]);
+
+  // Pagination
+  const jobsPerPage = 6;
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+
+  // Checkbox handlers
+  const handleCategoryChange = (category) => {
+    setSelectedCategory((prev) =>
+      prev.includes(category) ? prev.filter((cat) => cat !== category) : [...prev, category]
+    );
+  };
+
+  const handleLocationChange = (location) => {
+    setSelectedLocation((prev) =>
+      prev.includes(location) ? prev.filter((loc) => loc !== location) : [...prev, location]
+    );
+  };
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 py-8">
-
       {/* Toggle Button for Mobile */}
       <div className="lg:hidden flex justify-end mb-4">
         <button
@@ -46,12 +62,8 @@ setCurrentPage(1)
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
-
         {/* Sidebar */}
-        <aside
-          className={`w-full lg:w-1/4 bg-white p-6 rounded-xl shadow-md transition-all duration-300
-            ${showFilters ? "block" : "hidden"} lg:block`}
-        >
+        <aside className={`w-full lg:w-1/4 bg-white p-6 rounded-xl shadow-md transition-all duration-300 ${showFilters ? "block" : "hidden"} lg:block`}>
           {/* Search Filters Active */}
           {isSearch && (searchFilter.title || searchFilter.location) && (
             <div className="mb-6">
@@ -61,7 +73,7 @@ setCurrentPage(1)
                   <span className="flex items-center gap-2 bg-blue-100 text-blue-800 border border-blue-200 px-3 py-1.5 rounded-full">
                     {searchFilter.title}
                     <img
-                      onClick={() => setSearchFilter(prev => ({ ...prev, title: "" }))}
+                      onClick={() => setSearchFilter((prev) => ({ ...prev, title: "" }))}
                       src={assets.cross_icon}
                       alt="Remove title"
                       className="w-4 h-4 cursor-pointer"
@@ -72,7 +84,7 @@ setCurrentPage(1)
                   <span className="flex items-center gap-2 bg-red-100 text-red-800 border border-red-200 px-3 py-1.5 rounded-full">
                     {searchFilter.location}
                     <img
-                      onClick={() => setSearchFilter(prev => ({ ...prev, location: "" }))}
+                      onClick={() => setSearchFilter((prev) => ({ ...prev, location: "" }))}
                       src={assets.cross_icon}
                       alt="Remove location"
                       className="w-4 h-4 cursor-pointer"
@@ -94,9 +106,8 @@ setCurrentPage(1)
                     id={category}
                     value={category}
                     className="w-4 h-4"
-                    onChange={()=> handleCategoryChange(category)}
+                    onChange={() => handleCategoryChange(category)}
                     checked={selectedCategory.includes(category)}
-                    
                   />
                   <label htmlFor={category} className="text-gray-600 text-sm">
                     {category}
@@ -117,7 +128,7 @@ setCurrentPage(1)
                     id={location}
                     value={location}
                     className="w-4 h-4"
-                    onChange={()=> handleLocationChange(location)}
+                    onChange={() => handleLocationChange(location)}
                     checked={selectedLocation.includes(location)}
                   />
                   <label htmlFor={location} className="text-gray-600 text-sm">
@@ -131,53 +142,51 @@ setCurrentPage(1)
 
         {/* Job Cards */}
         <section className="w-full lg:w-3/4">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-2" id='job-list'>Latest Jobs</h3>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-2" id="job-list">
+            Latest Jobs
+          </h3>
           <p className="mb-6 text-gray-500">Get your desired job from top companies</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filderedJobs.slice((CurrentPage-1)*6,CurrentPage*6).map((job, index) => (
+            {paginatedJobs.map((job, index) => (
               <JobCard key={index} job={job} />
             ))}
           </div>
-{/* pagination */}
 
-{jobs.length > 0 && (
-  <div className="flex items-center justify-center gap-2 mt-8 flex-wrap">
-    {/* Left Arrow */}
-    <button
-      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-      disabled={CurrentPage === 1}
-      className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
-    >
-      <img src={assets.left_arrow_icon} alt="Previous" className="w-4 h-4" />
-    </button>
+          {/* Pagination */}
+          {filteredJobs.length > 0 && (
+            <div className="flex items-center justify-center gap-2 mt-8 flex-wrap">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+              >
+                <img src={assets.left_arrow_icon} alt="Previous" className="w-4 h-4" />
+              </button>
 
-    {/* Page Numbers */}
-    {Array.from({ length: Math.ceil(jobs.length / 6) }).map((_, index) => (
-      <button
-        key={index}
-        onClick={() => setCurrentPage(index + 1)}
-        className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
-          CurrentPage === index + 1
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-blue-100"
-        }`}
-      >
-        {index + 1}
-      </button>
-    ))}
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+                    currentPage === index + 1
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-blue-100"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
 
-    {/* Right Arrow */}
-    <button
-      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(jobs.length / 6)))}
-      disabled={CurrentPage === Math.ceil(jobs.length / 6)}
-      className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
-    >
-      <img src={assets.right_arrow_icon} alt="Next" className="w-4 h-4" />
-    </button>
-  </div>
-)}
-
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+              >
+                <img src={assets.right_arrow_icon} alt="Next" className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>
@@ -185,4 +194,3 @@ setCurrentPage(1)
 };
 
 export default JobListing;
-

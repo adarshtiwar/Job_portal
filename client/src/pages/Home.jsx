@@ -5,9 +5,10 @@ import JobListing from '../components/JobListing'
 function Home() {
     return (
         <div>
-            <Navbar />
+            
             <Hero/>
             <JobListing/>
+            
         </div>
     )
 }

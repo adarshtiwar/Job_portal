@@ -12,6 +12,8 @@ export const AppContextProvider = ({ children }) => {
   const [isSearch, setIsSearch] = useState(false);
   const [jobs, setJobs] = useState([]);
 
+  const [showReacruter, setShowReacuter] = useState(false);
+
   useEffect(() => {
     // Load jobs initially
     setJobs(jobsData);
@@ -23,7 +25,9 @@ export const AppContextProvider = ({ children }) => {
     isSearch,
     setIsSearch,
     jobs,
-    setJobs
+    setJobs,
+    showReacruter,
+    setShowReacuter
   };
 
   return (
