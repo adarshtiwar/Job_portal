@@ -20,7 +20,7 @@ app.use(expres.json());
 
 //routes
 app.get('/',(req,res)=>{
-    res.send("welcome to the page API is running....");
+    res.send("this is for the testing of the server");
 });
 app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
