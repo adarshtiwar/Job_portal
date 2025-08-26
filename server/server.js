@@ -16,16 +16,16 @@ await connectDB();
 app.use(cors());
 app.use(expres.json());
 
-
+ 
 
 //routes
 app.get('/',(req,res)=>{
-    res.send("API is running....");
+    res.send("welcome to the page API is running....");
 });
 app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
-app.post('/webhooks',clerkwebhook)
+app.post('/webhooks',clerkwebhook) 
 
 const PORT=process.env.PORT || 8000;
 Sentry.setupExpressErrorHandler(app);
